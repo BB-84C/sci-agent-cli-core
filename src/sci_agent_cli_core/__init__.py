@@ -1,0 +1,21 @@
+from sci_agent_cli_core.contracts import (
+    CORE_COMMANDS,
+    EXIT_COMMAND_UNAVAILABLE,
+    EXIT_CONNECTION_FAILED,
+    EXIT_FAILED,
+    EXIT_INVALID_INPUT,
+    EXIT_OK,
+    EXIT_POLICY_BLOCKED,
+)
+
+__all__ = [
+    "CORE_COMMANDS",
+    "EXIT_OK",
+    "EXIT_FAILED",
+    "EXIT_POLICY_BLOCKED",
+    "EXIT_INVALID_INPUT",
+    "EXIT_COMMAND_UNAVAILABLE",
+    "EXIT_CONNECTION_FAILED",
+]
+
+__version__ = "0.1.0"
