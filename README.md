@@ -19,7 +19,21 @@ match the contract.
 
 ## HOW TO USE: Bootstrap a new driver project
 
-Generate a new standalone driver that already passes core contract checks:
+**USE WITH YOUR CODING AGENT** (strongly recommended)
+
+Tell your coding agent:
+
+```powershell
+Fetch and follow instructions from https://github.com/BB-84C/sci-agent-cli-core/blob/main/README.md
+```
+
+Install from GitHub Release first:
+
+```powershell
+python -m pip install "https://github.com/BB-84C/sci-agent-cli-core/releases/download/v0.1.0/sci_agent_cli_core-0.1.0-py3-none-any.whl"
+```
+
+Generate a new standalone driver that already passes core contract checks (use ask question tool to ask your human what name for the cli driver and where to put the driver):
 
 ```powershell
 sci-cli-bootstrap --output-dir D:\path\<cli_driver_name> --cli-name <cli_driver_name> --package-name <cli_driver_name> --project-name "name-of-your-instrument-driver"

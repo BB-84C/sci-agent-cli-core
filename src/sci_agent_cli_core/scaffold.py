@@ -36,6 +36,15 @@ def main(argv: list[str] | None = None) -> int:
             action_name=action_name,
             action_arg_name=action_arg_name,
         ),
+        output_dir / "INTEGRATION_BRIEF.md": _render_integration_brief(
+            project_name=project_name,
+            package_name=package_name,
+            cli_name=cli_name,
+            parameter_name=parameter_name,
+            set_field_name=set_field_name,
+            action_name=action_name,
+            action_arg_name=action_arg_name,
+        ),
         output_dir / "src" / package_name / "__init__.py": _render_init(),
         output_dir / "src" / package_name / "backend.py": _render_backend(
             parameter_name=parameter_name,
@@ -202,29 +211,56 @@ def _render_driver_readme(
         f"""\
         # {project_name}
 
-        This project is an instrument CLI driver built on `sci-agent-cli-core`.
+        Agent-oriented integration runbook for `sci-agent-cli-core` drivers.
 
-        ## Contract scope
+        Command examples below use PowerShell syntax; adapt as needed for POSIX shells (bash/zsh).
 
-        This driver must stay wire-compatible for exactly:
+        ## 1) Mission and hard constraints
 
-        - `capabilities`
-        - `get`
-        - `set`
-        - `ramp`
-        - `act`
+        Mission: deliver a production-usable CLI integration while preserving the stable command contract.
 
-        ## Where to hook your real instrument code
+        Hard constraints:
 
-        Replace the in-memory logic in:
+        - Keep wire-compatible CLI methods: `capabilities`, `get`, `set`, `ramp`, `act`.
+        - Preserve JSON response shape semantics expected by conformance checks.
+        - Treat unknown integration requirements as unresolved until clarified by a human.
 
-        - `src/{package_name}/backend.py`
+        ## 2) Required human intake before coding
 
-        Keep command/output behavior stable in:
+        Do not implement integration code until a human has completed `INTEGRATION_BRIEF.md`.
 
-        - `src/{package_name}/driver.py`
+        Required intake artifacts (unknown-first, include what exists):
 
-        ## Local setup
+        - Documentation/specs (`.md`, `.pdf`, wiki exports).
+        - SDKs or language bindings.
+        - CSV/XLSX mappings.
+        - Vendor tools/executables (`.exe`) and usage notes.
+        - Archive drops (`.zip`) and extracted folder layout.
+        - Raw folders with assets/scripts.
+        - Example requests/responses, logs, or captures.
+
+        ## 3) Discovery + mapping workflow
+
+        1. Collect artifacts and record source + version.
+        2. Identify parameter read/write surfaces and action surfaces.
+        3. Map vendor names/types to CLI parameter/action schema.
+        4. Document assumptions, unknowns, and risk items before coding.
+        5. Implement one minimal end-to-end parameter and action path.
+        6. Expand only after verification is green.
+
+        ## 4) Implementation boundary
+
+        - `src/{package_name}/backend.py`: flexible integration layer (protocol/SDK/device details).
+        - `src/{package_name}/driver.py`: stable contract boundary (CLI semantics and payload shape).
+
+        Keep placeholder defaults dynamic until replaced with verified mappings:
+
+        - Parameter: `{parameter_name}` using field `{set_field_name}`
+        - Action: `{action_name}` using arg `{action_arg_name}`
+
+        ## 5) Verification commands
+
+        Run both layers before any release decision:
 
         ```powershell
         python -m venv .venv
@@ -234,11 +270,119 @@ def _render_driver_readme(
         pytest
         ```
 
-        ## Contract verification
-
         ```powershell
         sci-cli-conformance --command "{cli_name}" --get-parameter {parameter_name} --set-parameter {parameter_name} --set-arg {set_field_name}=0.2 --ramp-parameter {parameter_name} --ramp-start 0.0 --ramp-end 0.4 --ramp-step 0.1 --action-name {action_name} --action-arg {action_arg_name}=1
         ```
+
+        ## 6) Local build/install endpoint
+
+        ```powershell
+        python -m build
+        python -m pip install --force-reinstall dist\\*.whl
+        {cli_name} capabilities --json
+        ```
+
+        ## 7) Release decision gate (human required)
+
+        Stop after local verification and require explicit human approval before running any publish/release command.
+
+        Use a policy gate: no approval, no release.
+
+        ## 8) Release paths
+
+        ### Path A: GitHub CLI
+
+        Replace placeholders before running:
+
+        - `<RELEASE_TAG>` (for example: `v0.1.0`)
+        - `<REMOTE_NAME>` (for example: `origin`)
+
+        ```powershell
+        git tag <RELEASE_TAG>
+        git push <REMOTE_NAME> <RELEASE_TAG>
+        gh release create <RELEASE_TAG> dist/* --title "<RELEASE_TAG>" --notes "Release for {project_name}."
+        ```
+
+        ### Path B: Manual GitHub web upload
+
+        1. Replace `<RELEASE_TAG>` and `<REMOTE_NAME>` with your values.
+        2. Create and push tag `<RELEASE_TAG>`.
+        3. Open repository Releases page.
+        4. Draft release for `<RELEASE_TAG>`.
+        5. Upload artifacts from `dist/`.
+        6. Publish after human review.
+        """
+    )
+
+
+def _render_integration_brief(
+    *,
+    project_name: str,
+    package_name: str,
+    cli_name: str,
+    parameter_name: str,
+    set_field_name: str,
+    action_name: str,
+    action_arg_name: str,
+) -> str:
+    return dedent(
+        f"""\
+        # Integration Brief - {project_name}
+
+        Complete this brief with a human partner before integration coding starts.
+
+        ## Project context
+
+        - Project: `{project_name}`
+        - Package: `{package_name}`
+        - CLI: `{cli_name}`
+
+        ## Required human intake
+
+        Capture all known inputs and source locations:
+
+        - Docs/specs (`.md`, `.pdf`, wiki exports):
+        - SDK/API package(s):
+        - CSV mapping files:
+        - XLSX mapping files:
+        - Executables (`.exe`) and invocation notes:
+        - ZIP bundles (`.zip`) and extraction notes:
+        - Folder-based assets/scripts:
+        - Sample requests/responses/logs:
+
+        ## Integration mode selection
+
+        - Primary mode: [ ] Native SDK [ ] Process/CLI [ ] Serial [ ] TCP [ ] Other:
+        - Transport details (host/port/device path/baud):
+        - Auth/secrets needed:
+        - Platform/runtime constraints:
+
+        ## Discovery + mapping table
+
+        | Surface | Vendor Name | Driver Name | Args/Fields | Type/Units | Notes |
+        | --- | --- | --- | --- | --- | --- |
+        | Parameter | TBD | {parameter_name} | {set_field_name} | TBD | |
+        | Action | TBD | {action_name} | {action_arg_name} | TBD | |
+
+        ## Safety constraints
+
+        - Allowed ranges and limits:
+        - Ramp/step limits:
+        - Interlocks/guardrails:
+        - Operator confirmation requirements:
+
+        ## Error handling expectations
+
+        - Vendor error codes/messages:
+        - Timeout + retry policy:
+        - Recoverable vs fatal failures:
+        - Logging/audit expectations:
+
+        ## Open questions
+
+        -
+        -
+        -
         """
     )
 

@@ -9,3 +9,5 @@ dist/
 *.egg-info/
 .venv/
 /tests
+/.tmp_scaffold_check
+/tests
