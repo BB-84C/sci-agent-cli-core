@@ -20,6 +20,7 @@ dev = [
 
 [project.scripts]
 sci-cli-conformance = "sci_agent_cli_core.conformance:main"
+sci-cli-bootstrap = "sci_agent_cli_core.scaffold:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
