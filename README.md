@@ -30,7 +30,7 @@ Fetch and follow instructions from https://github.com/BB-84C/sci-agent-cli-core/
 Install from GitHub Release first:
 
 ```powershell
-python -m pip install "https://github.com/BB-84C/sci-agent-cli-core/releases/download/v0.1.0/sci_agent_cli_core-0.1.0-py3-none-any.whl"
+python -m pip install "https://github.com/BB-84C/sci-agent-cli-core/releases/download/v0.1.0/sci_agent_cli_core-<latest_release_version>-py3-none-any.whl"
 ```
 
 Generate a new standalone driver that already passes core contract checks (use ask question tool to ask your human what name for the cli driver and where to put the driver):
