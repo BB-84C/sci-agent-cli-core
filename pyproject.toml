@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sci-agent-cli-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Strict nqctl-core-compatible CLI runtime for science instrument drivers"
 readme = "README.md"
 requires-python = ">=3.10"

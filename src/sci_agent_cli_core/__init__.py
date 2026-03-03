@@ -18,4 +18,4 @@ __all__ = [
     "EXIT_CONNECTION_FAILED",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
